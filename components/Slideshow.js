@@ -1,4 +1,7 @@
 import anime from 'animejs'
+// import equalHeight from './../lib/equal'
+
+import Dots from './Dots'
 
 const defaultOptions = {
   buttons: true,
@@ -14,9 +17,12 @@ class Slideshow {
     this.currentSlideIndex = 0
     this.isSliding = false
     this.isDead = false
-    this.init()
+
     this.on = this.on.bind(this)
+    this.goTo = this.goTo.bind(this)
     this.options = options
+
+    this.init()
 	}
 
   // afterNext = after next slide
@@ -43,7 +49,7 @@ class Slideshow {
     this.triggerCallback(cb)
   }
 
-  getMaxHeight(){
+  getMaxHeight() {
     let maxHeight = 0
     this.slides.map(  (slide) => {
       if ( slide.offsetHeight > maxHeight ) {
@@ -66,9 +72,11 @@ class Slideshow {
       slide.style.position = 'absolute'
       slide.style.top = '0px'
       slide.style.left = `${i*this.parentWidth}px`
+      slide.style.height = 'auto'
+      // slide.style.height = '100%'
+      // slide.classList.add('seltzer-equalHeight')
     } )
   }
-
 
   setParent() {
     this.elem.style.overflow = 'hidden'
@@ -77,7 +85,40 @@ class Slideshow {
   }
 
 
+  triggerUpdateEvent(updateIndex) {
+    let eventPayload = {
+      detail:{
+        updateIndex: updateIndex,
+        test: 'a test'
+      }
+
+    }
+    let updateEvent = new CustomEvent('updateEvent', eventPayload);
+    this.elem.dispatchEvent(updateEvent)
+  }
+
+
+  forceAnimate(moveToIndex, cb) {
+    this.triggerUpdateEvent(moveToIndex)
+
+    anime({
+      targets: this.slider,
+      translateX: [
+        { value: -1 * (moveToIndex * this.parentWidth), duration: 700 }
+      ],
+      easing: 'easeOutExpo',
+      complete: () => {
+        this.elem.dispatchEvent( new CustomEvent('afterSlide') )
+        this.isSliding = false
+        this.triggerCallback(cb)
+      }
+    })
+  }
+
+
   animateSlider(moveToIndex, direction) {
+    this.triggerUpdateEvent(moveToIndex)
+
     anime({
       targets: this.slider,
       translateX: [
@@ -127,10 +168,10 @@ class Slideshow {
   nextSlide() {
     this.nextSlideIndex = this.currentSlideIndex + 1
 
-    if( this.nextSlideIndex > this.slides.length - 1) {
+    if ( this.nextSlideIndex > this.slides.length - 1) {
       this.positionFirstSlide()
       this.animateSlider(this.nextSlideIndex, 'next')
-    }else{
+    } else {
       this.animateSlider(this.nextSlideIndex, 'next')
       this.currentSlideIndex = this.nextSlideIndex
     }
@@ -185,6 +226,8 @@ class Slideshow {
       slide.style.position = `relative`
       slide.style.top = `0px`
       slide.style.left = `0px`
+      slide.style.height = 'auto';
+      slide.classList.remove('seltzer-equalHeight')
     } )
   }
 
@@ -210,15 +253,25 @@ class Slideshow {
     }
   }
 
+  goTo(slideIndex) {
+    this.forceAnimate(slideIndex)
+  }
+
+  addListeners() {
+    this.elem.addEventListener( 'slideUpdate', (event) => {
+      let index = event.detail.updateIndex
+      this.forceAnimate(index)
+      this.currentSlideIndex = index
+    } )
+  }
+
 	init() {
     this.parent = this.elem.parentElement
     this.generateSlider()
 
     if ( this.options.dots ) {
-      this.dots = new Dots(this.elem)
+      this.dots = new Dots(this.elem, this.slides)
     }
-    // if()
-
 
     window.addEventListener( 'resize', () => {
       if ( ! this.isDead) {
@@ -227,6 +280,7 @@ class Slideshow {
     } )
 
     this.initTriggers()
+    this.addListeners()
 	}
 }
 

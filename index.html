@@ -3,14 +3,16 @@
     <div class="slideshow">
       <div class="inner">
         <div class="slider">
-          <div>
+          <div data-match-height="groupName1">
             <div class="testClass">
               0
             </div>
           </div>
-          <div class="testTrigger">jhdsf kdsafhdsafjk dsfh sdkjfhdsjkafh kjdasfhkjsdhfkjhdsa kjfhdsjakfh jkdshfkjhdsajfkhdsajkfh sdjkfhjkdshfkhkdfkjhdskjfh dkshfjkdsf ashdfjkhdsfkjh sdkjfhsdjkfh jdkfhkdhf 1</div>
-          <div>2</div>
-          <div>3</div>
+          <div data-match-height="groupName1">1</div>
+          <div data-match-height="groupName1">Group ANYTHING that needs an equal height by adding the attribute data-match-height=[groupName]. It evens works on nested divs etc. Even works on images (although they get stretched a touch).
+
+</div>
+          <div data-match-height="groupName1">3</div>
         </div>
 
       </div>
@@ -19,9 +21,6 @@
 
     <button class="js-prev">prev</button>
     <button class="js-next">next</button>
-    <script>
-      document.querySelector('.testTrigger').addEventListener('click', ()=> alert('aaaaaaaayayay'))
-    </script>
     <script src="index.js"></script>
   </body>
 
