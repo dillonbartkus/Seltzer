@@ -1,0 +1,19 @@
+{
+  "name": "slideshow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel  build  index.html",
+    "dev": "parcel  --no-cache  index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "animejs": "^2.2.0",
+    "clone-deep": "^4.0.0",
+    "node-sass": "^4.9.3",
+    "parcel-bundler": "^1.9.7"
+  }
+}
